@@ -8,6 +8,7 @@ public class BarMls : MonoBehaviour
     private Image Mistura;
     private Image Maior;
     private Text TxtQntidade;
+    private Text TxtName;
     public Vector2 FxFaixa = new Vector2(0, 100);
     public Vector4 FxForte;
     public Vector4 FxSuave;
@@ -24,12 +25,14 @@ public class BarMls : MonoBehaviour
     public Color CorT;
     public Color CorM;
 
+    public EstadosFuzzy Fuzzyficar = new EstadosFuzzy();
     // Start is called before the first frame update
     void Start()
     {
         Mistura = transform.GetChild(1).GetChild(0).GetComponent<Image>();
         Maior = transform.GetChild(2).GetChild(0).GetComponent<Image>();
         TxtQntidade = transform.GetChild(2).GetChild(0).GetChild(0).GetComponent<Text>();
+        TxtName = transform.GetChild(3).GetComponent<Text>();
         CorT = Color.white;
         CorM = Color.white;
         GetComponent<Slider>().minValue = FxFaixa.x;
@@ -45,29 +48,25 @@ public class BarMls : MonoBehaviour
         Suave = Pertinencia(FxSuave);
         Fraco = Pertinencia(FxFraco);
 
+        TxtName.text = "Qnt de " + gameObject.name;
         TxtQntidade.text = "" + (int) MLS;
+        Fuzzyficar.Forte = Forte;
+        Fuzzyficar.Suave = Suave;
+        Fuzzyficar.Fraco = Fraco;
+        Fuzzyficar.MLS = MLS;
     }
     float Pertinencia(Vector4 Fx)
     {
         float p = 0;
         if (CorT==Color.white)
-        {
             MLS = (int)MLS;
-        }
 
         if (Fx.x < MLS && MLS <= Fx.y)
-        {
             p = (MLS - Fx.x) / (Fx.y - Fx.x);
-        }
         else if (Fx.y <= MLS && MLS <= Fx.z)
-        {
             p = 1;
-        }
         else if (Fx.z < MLS && MLS <= Fx.w)
-        {
             p = (Fx.w - MLS) / (Fx.w - Fx.z);
-        }
-
 
 
         return p;
@@ -92,8 +91,6 @@ public class BarMls : MonoBehaviour
             CorM = Color.green;
         if (Fraco > Mathf.Max(Suave, Forte))
             CorM = Color.blue;
-
-
     }
     public void QantidadeML(float Value)
     {
