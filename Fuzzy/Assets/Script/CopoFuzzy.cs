@@ -31,12 +31,15 @@ public class CopoFuzzy : MonoBehaviour
     public EstadosFuzzy fGelo;
     public EstadosFuzzy fCuba = new EstadosFuzzy();
 
+    private Text txtPreco, txtOoks;
 
     // Start is called before the first frame update
     void Start()
     {
         Mistura = transform.GetChild(1).GetChild(0).GetComponent<Image>();
         Maior = transform.GetChild(2).GetChild(0).GetComponent<Image>();
+        txtPreco = transform.GetChild(2).GetChild(0).GetChild(0).GetComponent<Text>();
+        txtOoks = transform.GetChild(3).GetComponent<Text>();
         CorT = Color.white;
         CorM = Color.white;
         GetComponent<Slider>().minValue = FxFaixa.x;
@@ -95,12 +98,40 @@ public class CopoFuzzy : MonoBehaviour
             CorT = Color.white;
 
         CorM = Color.white;
+        txtPreco.text = "R$";
         if (Forte > Mathf.Max(Suave, Fraco))
+        {
             CorM = Color.red;
+            txtPreco.text += 25;
+        }
         if (Suave > Mathf.Max(Forte, Fraco))
+        {
             CorM = Color.green;
+            txtPreco.text += 20;
+        }
         if (Fraco > Mathf.Max(Suave, Forte))
+        {
             CorM = Color.blue;
+            txtPreco.text += 15;
+        }
+        if(CorM==Color.white)
+            txtPreco.text += 00;
+
+        txtPreco.text += ",00";
+
+        txtOoks.text = "Refri:  ";
+        if (Mathf.Max(fRefri.Forte, fRefri.Suave, fRefri.Fraco) > 0)
+            txtOoks.text += "OK";
+        txtOoks.text += "\nRum:  ";
+        if (Mathf.Max(fRum.Forte, fRum.Suave, fRum.Fraco) > 0)
+            txtOoks.text += "OK";
+        txtOoks.text += "\nGelo:  ";
+        if (fGelo.Suave > 0)
+            txtOoks.text += "OK";
+        //txtOoks.text += "\nRum:  ";
+
+
+
     }
     public void SelecaoPepsi()
     {
