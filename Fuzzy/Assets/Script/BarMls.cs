@@ -26,6 +26,7 @@ public class BarMls : MonoBehaviour
     public Color CorM;
 
     public EstadosFuzzy Fuzzyficar = new EstadosFuzzy();
+    private bool Gaming;
     // Start is called before the first frame update
     void Start()
     {
@@ -42,6 +43,8 @@ public class BarMls : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        Gaming = GameObject.Find("GameMode").GetComponent<GameMode>().Gaming;
+
         MisturarCores();
 
         Forte = Pertinencia(FxForte);
@@ -73,10 +76,17 @@ public class BarMls : MonoBehaviour
     }
     void MisturarCores()
     {
-        Mistura.color = CorT;
-        Maior.color = CorM;
+        //if (Gaming)
+        //{
+        //    Mistura.color = Color.white;
+        //    Maior.color = Color.white;
+        //}
+        //else
+        {
+            Mistura.color = CorT;
+            Maior.color = CorM;
+        }
 
-        
         CorT.r = Forte;
         CorT.g = Suave;
         CorT.b = Fraco;

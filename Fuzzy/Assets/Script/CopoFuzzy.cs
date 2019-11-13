@@ -29,9 +29,13 @@ public class CopoFuzzy : MonoBehaviour
     public EstadosFuzzy fRefri;
     public EstadosFuzzy fRum;
     public EstadosFuzzy fGelo;
+    public EstadosFuzzy fCoca;
+    public EstadosFuzzy fPepsi;
+    public EstadosFuzzy fNull = new EstadosFuzzy();
     public EstadosFuzzy fCuba = new EstadosFuzzy();
 
     private Text txtPreco, txtOoks;
+    private bool Gaming;
 
     // Start is called before the first frame update
     void Start()
@@ -48,23 +52,34 @@ public class CopoFuzzy : MonoBehaviour
         fRefri = gbCoca.GetComponent<BarMls>().Fuzzyficar;
         fRum = gbRum.GetComponent<BarMls>().Fuzzyficar;
         fGelo = gbGelo.GetComponent<BarMls>().Fuzzyficar;
+        fCoca = gbCoca.GetComponent<BarMls>().Fuzzyficar;
+        fPepsi = gbPepsi.GetComponent<BarMls>().Fuzzyficar;
     }
 
     // Update is called once per frame
     void Update()
     {
+        Gaming = GameObject.Find("GameMode").GetComponent<GameMode>().Gaming;
+        if (Gaming)
+            Selecao();
+
         MLS = fCuba.MLS;
         Forte = fCuba.Forte;
         Suave = fCuba.Suave;
         Fraco = fCuba.Fraco;
 
+        if (Gaming)
+            fCuba.MLS = fPepsi.MLS + fCoca.MLS + fRum.MLS + fGelo.MLS;
+        else
+            fCuba.MLS = fRefri.MLS + fRum.MLS + fGelo.MLS;
 
-        fCuba.MLS = fRefri.MLS + fRum.MLS + fGelo.MLS;
         MXml = 150;
         if (fCuba.MLS > 100)
             MXml = 200;
         if (fCuba.MLS > 150)
             MXml = 300;
+        if (fCuba.MLS > 250)
+            MXml = 400;
         GetComponent<Slider>().maxValue = MXml;
         GetComponent<Slider>().value = fCuba.MLS;
         MisturarCores();
@@ -86,8 +101,16 @@ public class CopoFuzzy : MonoBehaviour
     }
     void MisturarCores()
     {
-        Mistura.color = CorT;
-        Maior.color = CorM;
+        //if (Gaming)
+        //{
+        //    Mistura.color = Color.white;
+        //    Maior.color = Color.white;
+        //}
+        //else
+        {
+            Mistura.color = CorT;
+            Maior.color = CorM;
+        }
 
 
         CorT.r = Forte;
@@ -119,19 +142,32 @@ public class CopoFuzzy : MonoBehaviour
 
         txtPreco.text += ",00";
 
-        txtOoks.text = "Refri:  ";
-        if (Mathf.Max(fRefri.Forte, fRefri.Suave, fRefri.Fraco) > 0)
-            txtOoks.text += "OK";
-        txtOoks.text += "\nRum:  ";
-        if (Mathf.Max(fRum.Forte, fRum.Suave, fRum.Fraco) > 0)
-            txtOoks.text += "OK";
-        txtOoks.text += "\nGelo:  ";
-        if (fGelo.Suave > 0)
-            txtOoks.text += "OK";
-        //txtOoks.text += "\nRum:  ";
+        if (!Gaming)
+        {
+            txtOoks.text = "Refri:  ";
+            if (Mathf.Max(fRefri.Forte, fRefri.Suave, fRefri.Fraco) > 0)
+                txtOoks.text += "OK";
+            txtOoks.text += "\nRum:  ";
+            if (Mathf.Max(fRum.Forte, fRum.Suave, fRum.Fraco) > 0)
+                txtOoks.text += "OK";
+            txtOoks.text += "\nGelo:  ";
+            if (fGelo.Suave > 0)
+                txtOoks.text += "OK";
+            //txtOoks.text += "\nRum:  ";
+        }
 
 
-
+    }
+    void Selecao()
+    {
+        if (fPepsi.MLS == 0 && fCoca.MLS == 0)
+            fRefri = fNull;
+        else if (fCoca.MLS == 0)
+            fRefri = fPepsi;
+        else if (fPepsi.MLS == 0)
+            fRefri = fCoca;
+        else
+            fRefri = fNull;
     }
     public void SelecaoPepsi()
     {
@@ -139,10 +175,10 @@ public class CopoFuzzy : MonoBehaviour
         switch (value)
         {
             case 0:
-                fRefri = gbCoca.GetComponent<BarMls>().Fuzzyficar;
+                fRefri = fCoca;
                 break;
             case 1:
-                fRefri = gbPepsi.GetComponent<BarMls>().Fuzzyficar;
+                fRefri = fPepsi;
                 break;
 
         }
