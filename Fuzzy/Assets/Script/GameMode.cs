@@ -15,22 +15,72 @@ public class GameMode : MonoBehaviour
     public float Relogio;
     public Vector2 R;
     public float MaisTempo;
+    public float MxTempoPedido;
+    public float TempPedido;
+    public Sprite[] sPedidos = new Sprite[7];
+    public GameObject pPedidos;
+    public Image[] iPedidos = new Image[10];
+    public Vector3[] vPedidos = new Vector3[10];
 
     // Start is called before the first frame update
     void Start()
     {
-
+        for (int i = 0; i < iPedidos.Length; i++)
+        {
+            iPedidos[i] = pPedidos.transform.GetChild(i).GetComponent<Image>();
+        }
+        TempPedido = MxTempoPedido;
         
     }
-
     // Update is called once per frame
     void Update()
     {
+        if (Gaming)
+            FazerPedidos();
         Att();
         Relogio -= Time.deltaTime;
         if (Relogio < 0)
             Gaming = false;
         
+    }
+    void FazerPedidos()
+    {
+        TempPedido += Time.deltaTime;
+        if (TempPedido > MxTempoPedido)
+        {
+            TempPedido = 00;
+
+
+            int j = 0;
+            while (vPedidos[j].z != 0 && j < vPedidos.Length)
+            {
+                j++;
+            }
+            Debug.Log(j);
+            if (j < vPedidos.Length)
+            {
+                int Tipo = (int)(Random.Range(0, 10) % 2);
+                int Paladar = (int)(Random.Range(0, 10) % 3);
+                int Sabor = Tipo * 3 + Paladar + 1;
+
+
+                vPedidos[j] = new Vector3(Tipo, Paladar, Sabor);
+
+                iPedidos[j].sprite = sPedidos[Sabor];
+            }
+
+            for (int i = 110; i < vPedidos.Length; i++)
+            {
+                int Tipo = (int)(Random.Range(0, 10) % 2);
+                int Paladar = (int)(Random.Range(0, 10) % 3);
+                int Sabor = Tipo * 3 + Paladar + 1;
+
+
+                vPedidos[i] = new Vector3(Tipo, Paladar, Sabor);
+
+                iPedidos[i].sprite = sPedidos[Sabor];
+            }
+        }
     }
     void Att()
     {
