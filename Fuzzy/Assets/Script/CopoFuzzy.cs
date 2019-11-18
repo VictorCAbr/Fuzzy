@@ -20,6 +20,11 @@ public class CopoFuzzy : MonoBehaviour
     public float Fraco;
     public Color CorT;
     public Color CorM;
+    public float maior;
+    public Vector4 PesosCor = new Vector4(1, 2, 3, 0);
+    public Vector4 CorEme;
+    public Vector4 CorTe;
+    public float ValorPaladar;
 
     public GameObject Escolha;
     public GameObject gbCoca;
@@ -54,6 +59,7 @@ public class CopoFuzzy : MonoBehaviour
         fGelo = gbGelo.GetComponent<BarMls>().Fuzzyficar;
         fCoca = gbCoca.GetComponent<BarMls>().Fuzzyficar;
         fPepsi = gbPepsi.GetComponent<BarMls>().Fuzzyficar;
+        SelecaoPepsi();
     }
 
     // Update is called once per frame
@@ -112,33 +118,31 @@ public class CopoFuzzy : MonoBehaviour
             Maior.color = CorM;
         }
 
-
-        CorT.r = Forte;
-        CorT.g = Suave;
-        CorT.b = Fraco;
+        CorTe = new Vector4(Forte, Suave, Fraco, 0);
+        CorT = CorTe;
         CorT.a = 1;
-        if (CorT == Color.black)
+        if (CorTe == Vector4.zero)
             CorT = Color.white;
 
-        CorM = Color.white;
+        maior = 0.01f;
+        for (int i = 0; i < 3; i++)
+            if (CorTe[i] > maior)
+                maior = CorTe[i];
+        for (int i = 0; i < 4; i++)
+            CorEme[i] = (CorTe[i] == maior) ? 1 : 0;
+
+        CorM = CorEme;
+        if (CorEme == Vector4.zero)
+            CorM = Color.white;
+        CorM.a = 1;
+        ValorPaladar = Vector4.Dot(CorEme, PesosCor);
+
+
         txtPreco.text = "R$";
-        if (Forte > Mathf.Max(Suave, Fraco))
-        {
-            CorM = Color.red;
-            txtPreco.text += 25;
-        }
-        if (Suave > Mathf.Max(Forte, Fraco))
-        {
-            CorM = Color.green;
-            txtPreco.text += 20;
-        }
-        if (Fraco > Mathf.Max(Suave, Forte))
-        {
-            CorM = Color.blue;
-            txtPreco.text += 15;
-        }
-        if(CorM==Color.white)
+        if (CorM == Color.white)
             txtPreco.text += 00;
+        else
+            txtPreco.text += 30 - (ValorPaladar * 5);
 
         txtPreco.text += ",00";
 
@@ -161,13 +165,20 @@ public class CopoFuzzy : MonoBehaviour
     void Selecao()
     {
         if (fPepsi.MLS == 0 && fCoca.MLS == 0)
-            fRefri = fNull;
+            fRefri = fCoca;
         else if (fCoca.MLS == 0)
             fRefri = fPepsi;
         else if (fPepsi.MLS == 0)
             fRefri = fCoca;
         else
             fRefri = fNull;
+    }
+    public void Limpar()
+    {
+        gbGelo.GetComponent<Slider>().value = 0;
+        gbPepsi.GetComponent<Slider>().value = 0;
+        gbCoca.GetComponent<Slider>().value = 0;
+        gbRum.GetComponent<Slider>().value = 0;
     }
     public void SelecaoPepsi()
     {

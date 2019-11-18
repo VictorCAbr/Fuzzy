@@ -9,6 +9,8 @@ public class GameMode : MonoBehaviour
     public GameObject gbEscolhas;
     public GameObject gbRecita;
     public GameObject gbPedidos;
+    public GameObject gbEnter;
+    public GameObject gbCopo;
 
     public Text TxtRelogio;
     public Vector2 MxRelogio;
@@ -19,6 +21,7 @@ public class GameMode : MonoBehaviour
     public float TempPedido;
     public Sprite[] sPedidos = new Sprite[7];
     public GameObject pPedidos;
+    [HideInInspector]
     public Image[] iPedidos = new Image[10];
     public Vector3[] vPedidos = new Vector3[10];
 
@@ -30,7 +33,7 @@ public class GameMode : MonoBehaviour
             iPedidos[i] = pPedidos.transform.GetChild(i).GetComponent<Image>();
         }
         TempPedido = MxTempoPedido;
-        
+
     }
     // Update is called once per frame
     void Update()
@@ -41,7 +44,7 @@ public class GameMode : MonoBehaviour
         Relogio -= Time.deltaTime;
         if (Relogio < 0)
             Gaming = false;
-        
+
     }
     void FazerPedidos()
     {
@@ -56,7 +59,7 @@ public class GameMode : MonoBehaviour
             {
                 j++;
             }
-            Debug.Log(j);
+            // Debug.Log(j);
             if (j < vPedidos.Length)
             {
                 int Tipo = (int)(Random.Range(0, 10) % 2);
@@ -84,10 +87,11 @@ public class GameMode : MonoBehaviour
     }
     void Att()
     {
-        
+
         gbEscolhas.SetActive(!Gaming);
         gbRecita.SetActive(!Gaming);
         gbPedidos.SetActive(Gaming);
+        gbEnter.SetActive(Gaming);
         if (Gaming)
         {
             TxtRelogio.text = (int)(Relogio / 60) + ":";
@@ -98,7 +102,12 @@ public class GameMode : MonoBehaviour
         R.y = (int)(Relogio % 60);
         R.x = (int)(Relogio / 60);
 
-}
+    }
+    public void Enter()
+    {
+        gbCopo.GetComponent<CopoFuzzy>().Limpar();
+        Debug.Log(gbCopo.GetComponent<CopoFuzzy>().ValorPaladar);
+    }
     public void Selecao()
     {
         int value = GetComponent<Dropdown>().value;
@@ -106,7 +115,7 @@ public class GameMode : MonoBehaviour
         {
             case 0:
                 Gaming = false;
-                 break;
+                break;
             case 1:
                 Gaming = true;
                 Relogio = MxRelogio.x * 60 + MxRelogio.y;
