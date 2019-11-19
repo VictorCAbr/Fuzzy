@@ -21,10 +21,12 @@ public class CopoFuzzy : MonoBehaviour
     public Color CorT;
     public Color CorM;
     public float maior;
+    [HideInInspector]
     public Vector4 PesosCor = new Vector4(1, 2, 3, 0);
-    public Vector4 CorEme;
-    public Vector4 CorTe;
+    [HideInInspector]
+    public Vector4 CorEme,CorTe;
     public float ValorPaladar;
+    public float SaborRefri;
 
     public GameObject Escolha;
     public GameObject gbCoca;
@@ -68,6 +70,7 @@ public class CopoFuzzy : MonoBehaviour
         Gaming = GameObject.Find("GameMode").GetComponent<GameMode>().Gaming;
         if (Gaming)
             Selecao();
+        SaborRefri = (((fRefri == fPepsi) ? 1 : 0));// * ((fRefri == fNull) ? 0 : 1)) + ((fRefri == fNull) ? 0 : 1);
 
         MLS = fCuba.MLS;
         Forte = fCuba.Forte;
@@ -172,6 +175,7 @@ public class CopoFuzzy : MonoBehaviour
             fRefri = fCoca;
         else
             fRefri = fNull;
+
     }
     public void Limpar()
     {
