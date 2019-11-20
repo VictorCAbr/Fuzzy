@@ -15,7 +15,6 @@ public class GameMode : MonoBehaviour
 
     private float dinheiro;
 
-
     public Text TxtRelogio;
     public Vector2 MxRelogio;
     public float Relogio;
@@ -34,11 +33,14 @@ public class GameMode : MonoBehaviour
     void Start()
     {
         for (int i = 0; i < iPedidos.Length; i++)
-        {
             iPedidos[i] = pPedidos.transform.GetChild(i).GetComponent<Image>();
-        }
         TempPedido = MxTempoPedido;
         txtCaixa = gbCaixa.transform.GetChild(0).GetComponent<Text>();
+        gbEscolhas.SetActive(!Gaming);
+        gbRecita.SetActive(!Gaming);
+        gbPedidos.SetActive(Gaming);
+        gbEnter.SetActive(Gaming);
+        gbCaixa.SetActive(Gaming);
     }
     // Update is called once per frame
     void Update()
@@ -49,53 +51,31 @@ public class GameMode : MonoBehaviour
         Relogio -= Time.deltaTime;
         if (Relogio < 0)
             Gaming = false;
-
     }
     void FazerPedidos()
     {
+        for (int i = 0; i < vPedidos.Length; i++)
+            iPedidos[i].sprite = sPedidos[(int)vPedidos[i].z];
+
         TempPedido += Time.deltaTime;
         if (TempPedido > MxTempoPedido)
         {
             TempPedido = 00;
-
-
             int j = 0;
                 while (vPedidos[j].z != 0 && j < vPedidos.Length)
                     j++;
-            // Debug.Log(j);
             if (j < vPedidos.Length)
             {
                 int Tipo = (int)(Random.Range(0, 10) % 2);
                 int Paladar = (int)(Random.Range(0, 10) % 3);
                 int Sabor = Tipo * 3 + Paladar + 1;
 
-
                 vPedidos[j] = new Vector3(Tipo, Paladar, Sabor);
-
-                iPedidos[j].sprite = sPedidos[Sabor];
-            }
-
-            for (int i = 110; i < vPedidos.Length; i++)
-            {
-                int Tipo = (int)(Random.Range(0, 10) % 2);
-                int Paladar = (int)(Random.Range(0, 10) % 3);
-                int Sabor = Tipo * 3 + Paladar + 1;
-
-
-                vPedidos[i] = new Vector3(Tipo, Paladar, Sabor);
-
-                iPedidos[i].sprite = sPedidos[Sabor];
             }
         }
     }
     void Att()
     {
-
-        gbEscolhas.SetActive(!Gaming);
-        gbRecita.SetActive(!Gaming);
-        gbPedidos.SetActive(Gaming);
-        gbEnter.SetActive(Gaming);
-        gbCaixa.SetActive(Gaming);
         txtCaixa.text = "C A I X A:  R$";
         if (dinheiro == 0)
             txtCaixa.text += "00";
@@ -108,37 +88,58 @@ public class GameMode : MonoBehaviour
                 TxtRelogio.text += "0";
             TxtRelogio.text += (int)(Relogio % 60);
         }
-        else
-        {
-            dinheiro = 0;
-        }
+       
         R.y = (int)(Relogio % 60);
         R.x = (int)(Relogio / 60);
-
     }
     public void Enter()
     {
-        float CdPedido;
-        gbCopo.GetComponent<CopoFuzzy>().Limpar();
-        CdPedido = gbCopo.GetComponent<CopoFuzzy>().ValorPaladar + (3 * gbCopo.GetComponent<CopoFuzzy>().SaborRefri);
+        if (Gaming)
+        {
+            #region gaming
+            float CdPedido;
+            gbCopo.GetComponent<CopoFuzzy>().Limpar();
+            CdPedido = gbCopo.GetComponent<CopoFuzzy>().ValorPaladar + (3 * gbCopo.GetComponent<CopoFuzzy>().SaborRefri);
 
-        PedidoFeito = new Vector3(gbCopo.GetComponent<CopoFuzzy>().SaborRefri, gbCopo.GetComponent<CopoFuzzy>().ValorPaladar, CdPedido);
-        dinheiro += CdPedido;
+            PedidoFeito = new Vector3(gbCopo.GetComponent<CopoFuzzy>().SaborRefri, gbCopo.GetComponent<CopoFuzzy>().ValorPaladar, CdPedido);
 
-        Color c;
-        if (CdPedido == vPedidos[0].z)
-            c = Color.green;
-        else c = Color.red;
-        gbCaixa.GetComponent<Image>().color = c;
-       // Invoke("Piscar()", 1.5f);
+            Color c;
+            if (CdPedido == vPedidos[0].z)
+            {
+                c = Color.green;
+                dinheiro += gbCopo.GetComponent<CopoFuzzy>().Preco;
+                Relogio += MaisTempo;
+                LimparPedido();
+            }
+            else c = Color.red;
+            gbCaixa.GetComponent<Image>().color = c;
+            Invoke("Piscar", 0.2f);
 
-
+            #endregion
+        }
+        else
+        {
+            resetar();
+        }
+    }
+    void LimparPedido()
+    {
+        for (int i = 0; i < vPedidos.Length - 1; i++)
+            vPedidos[i] = vPedidos[i + 1];
+        vPedidos[vPedidos.Length - 1] = Vector3.zero;
     }
     public void Piscar()
     {
-        Debug.Log("GFDCFVGHBJNLK,");
         gbCaixa.GetComponent<Image>().color = Color.white;
-
+    }
+    void resetar()
+    {
+        Relogio = MxRelogio.x * 60 + MxRelogio.y;
+        dinheiro = 0;
+        TempPedido = MxTempoPedido;
+        for (int i = 0; i < vPedidos.Length; i++)
+            vPedidos[i] = Vector3.zero;
+        Gaming = true;
     }
     public void Selecao()
     {
@@ -150,9 +151,14 @@ public class GameMode : MonoBehaviour
                 break;
             case 1:
                 Gaming = true;
-                Relogio = MxRelogio.x * 60 + MxRelogio.y;
+                resetar();
                 break;
 
         }
+        gbEscolhas.SetActive(!Gaming);
+        gbRecita.SetActive(!Gaming);
+        gbPedidos.SetActive(Gaming);
+        gbEnter.SetActive(Gaming);
+        gbCaixa.SetActive(Gaming);
     }
 }

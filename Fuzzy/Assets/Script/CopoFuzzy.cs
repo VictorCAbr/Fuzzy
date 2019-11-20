@@ -42,6 +42,7 @@ public class CopoFuzzy : MonoBehaviour
     public EstadosFuzzy fCuba = new EstadosFuzzy();
 
     private Text txtPreco, txtOoks;
+    public float Preco;
     private bool Gaming;
 
     // Start is called before the first frame update
@@ -141,12 +142,16 @@ public class CopoFuzzy : MonoBehaviour
         ValorPaladar = Vector4.Dot(CorEme, PesosCor);
 
 
-        txtPreco.text = "R$";
         if (CorM == Color.white)
-            txtPreco.text += 00;
+            Preco = 0;
         else
-            txtPreco.text += 30 - (ValorPaladar * 5);
+            Preco = 30 - (ValorPaladar * 5);
 
+
+        txtPreco.text = "R$";
+        if (Preco == 0)
+            txtPreco.text += 00;
+        else txtPreco.text += Preco;
         txtPreco.text += ",00";
 
         if (!Gaming)
